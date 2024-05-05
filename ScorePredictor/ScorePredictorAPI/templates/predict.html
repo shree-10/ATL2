@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Score Predictor</title>
+  <style>
+    /* Define light and colorful styles */
+    body {
+      background: linear-gradient(135deg, #ff6ec4, #7873f5); /* pink to blue gradient */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh; /* Full viewport height */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: #7873f5(255, 255, 255, 0.9); /* semi-transparent white */
+      padding: 20px;
+      width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333333; /* dark gray */
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555555; /* medium gray */
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #2c03f8; /* light gray */
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #2ea4da; /* green */
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #a1eaf7; /* darker green on hover */
+    }
+
+    #result {
+      color: #03c9fa; /* green */
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Score Predictor</h1>
+    <form id="predict-form">
+      {% csrf_token %}
+      <label for="study_hours">Study Hours:</label>
+      <input type="text" id="study_hours" name="study_hours" required />
+      <br /><br />
+
+      <label for="previous_score">Previous Score:</label>
+      <input type="text" id="previous_score" name="previous_score" required />
+      <br /><br />
+
+      <button type="button" onclick="predictScore()">Predict Score</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function predictScore() {
+      var form = document.getElementById("predict-form");
+      var formData = new FormData(form);
+
+      fetch('{% url "predict_score" %}', {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": document.getElementsByName("csrfmiddlewaretoken")[0]
+            .value,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          document.getElementById("result").innerText =
+            "Predicted Result: " + data.predicted_result;
+        });
+    }
+  </script>
+</body>
+</html>
